@@ -32,6 +32,6 @@ class Bond:
         bond_type = self.bond_type
         atom_id1 = self.atom_id1 
         atom_id2 = self.atom_id2
-        str = " %d %d %d %d \n" %(bond_id, bond_type, atom_id1, atom_id2)
+        str = " {}\t{}\t{}\t{}\n".format(bond_id, bond_type, atom_id1, atom_id2).expandtabs()
         return str
 

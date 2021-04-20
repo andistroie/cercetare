@@ -198,16 +198,18 @@ class OTHER_DEFAULTS:
     isalloc = False
 
 # domain
-    xprd = None
-    yprd = None
-    zprd = None
+    xprd = 0
+    yprd = 0
+    zprd = 0
 
-    xprd_half = None
-    yprd_half = None
-    zprd_half = None
+    xprd_half = 0
+    yprd_half = 0
+    zprd_half = 0
 
-    # Matrix [2,3]
-    box = None 
+    box =  {"xlo xhi" : None,
+            "ylo yhi": None,
+            "zlo zhi": None
+            }
 
     perflagx = 0
     perflagy = 0
@@ -223,17 +225,17 @@ class OTHER_DEFAULTS:
     ntypes = 0
     natomtypes = 0
     rvdw = None #[]
-    mass = None # []
-    x = None # [][]
-    v = None # [][]
-    x_unclean = None # [][]
-    q = None # []
-    tag = None #[]
+    # mass = None # []
+    # x = None # [][]
+    # v = None # [][]
+    # x_unclean = None # [][]
+    # q = None # []
+    # tag = None #[]
     itype = None # []
-    molecule = None # []
-    true = None #[]
+    # molecule = None # []
+    # true = [] #[]
     ibox = None #[]
-    atomtype = None #[]
+    # atomtype = None #[]
     atypes_total = None #[]
     
     # bond connectivity for each atom
@@ -292,10 +294,10 @@ class OTHER_DEFAULTS:
     temptest = 103
 
 # fragments
-    list = None # []
-    first = None # []
-    nlist = 0
-    isrange = None #[]
+    # list = None # []
+    # first = None # []
+    # nlist = 0
+    # isrange = None #[]
 
 # velocity analysis
     Emax = None #

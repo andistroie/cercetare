@@ -41,13 +41,12 @@ class LammpsInputFile():
               TODO - incomplete list
         """
         self.entries = {
-            "Masses"    : {},
-            "Atoms"     : {},
-            # "Velocities": [],
-            "Bonds"     : {},
-            "Angles"    : {}
+            "Masses"    : [],
+            "Atoms"     : [],
+            #"Velocities": [],
+            "Bonds"     : [],
+            "Angles"    : []
         }
-
 
         """parse the file"""
         self.read_file()
@@ -64,7 +63,7 @@ class LammpsInputFile():
     def get_masses(self):
         return self.entries["Masses"]
 
-    def set_masses(self, l = {}):
+    def set_masses(self, l = []):
         self.entries["Masses"] = l
 
     def get_velocities(self):
@@ -76,13 +75,13 @@ class LammpsInputFile():
     def get_bonds(self):
         return self.entries["Bonds"]
 
-    def set_bonds(self, l = {}):
+    def set_bonds(self, l = []):
         self.entries["Bonds"] = l
 
     def get_angles(self):
         return self.entries["Angles"]
 
-    def set_angles(self, l = {}):
+    def set_angles(self, l = []):
         self.entries["Angles"] = l
 
     def parse_nonbond_coeffs(self):
@@ -170,7 +169,8 @@ class LammpsInputFile():
         end = start + N
         for l in self.lines[start:end]:
             tokens = l.split()
-            self.entries["Masses"][int(tokens[0])] = float(tokens[1])
+            #self.entries["Masses"][int(tokens[0])] = float(tokens[1])
+            self.entries["Masses"].append((int(tokens[0]), float(tokens[1])))
 
         self.current_index = end
 
@@ -182,7 +182,7 @@ class LammpsInputFile():
         end = start + N
         for l in self.lines[start:end]:
             items = l.split()
-            if (len(items) == 7):
+            if len(items) >= 7:
                 idx = int(items[0])
                 tag = int(items[1])
                 type = int(items[2])
@@ -190,15 +190,15 @@ class LammpsInputFile():
                 x = float(items[4])
                 y = float(items[5])
                 z = float(items[6])
-            else:
-                idx = int(items[0])
-                tag = 1
-                type = int(items[1])
-                q = float(items[2])
-                x = float(items[3])
-                y = float(items[4])
-                z = float(items[5])
-            """it means we also have nx ny nz"""
+            # else:
+            #     idx = int(items[0])
+            #     tag = 1
+            #     type = int(items[1])
+            #     q = float(items[2])
+            #     x = float(items[3])
+            #     y = float(items[4])
+            #     z = float(items[5])
+            # """it means we also have nx ny nz"""
             if len(items) == 10:
                 nx = float(items[7])
                 ny = float(items[8])
@@ -208,7 +208,7 @@ class LammpsInputFile():
             else:
                 # atom = (idx, tag, type, q, x, y, z, 0, 0, 0)
                 atom = Atom(idx, tag, type, q, x, y, z, 0, 0, 0)
-            self.entries["Atoms"][idx] = atom
+            self.entries["Atoms"].append(atom)
 
         self.current_index = end
 
@@ -226,7 +226,7 @@ class LammpsInputFile():
             vz = float(items[3])
             # vel = (idx, vx, vy, vz)
             # self.entries["Velocities"].append(vel)
-            self.entries["Atoms"][idx].set_velocities((vx, vy, vz))
+            self.entries["Atoms"][idx - 1].set_velocities((vx, vy, vz))
         self.current_index = end
 
     def parse_bonds(self):
@@ -243,7 +243,7 @@ class LammpsInputFile():
             # bond = (idx, bond_type, atom1, atom2)
             # self.entries["Bonds"].append(bond)
             bond = Bond(idx, bond_type, atom1, atom2)
-            self.entries["Bonds"][idx] = bond
+            self.entries["Bonds"].append(bond)
         self.current_index = end
 
     def parse_angles(self):
@@ -261,7 +261,7 @@ class LammpsInputFile():
             # angle = (idx, angle_type, atom1, atom2, atom3)
             # self.entries["Angles"].append(angle)
             angle = Angle(int(items[0]), int(items[1]), int(items[2]), int(items[3]), int(items[4]))
-            self.entries["Angles"][int(items[0])] = angle
+            self.entries["Angles"].append(angle)
 
         self.current_index = end
 
@@ -334,81 +334,79 @@ class LammpsInputFile():
         print("Reading file: Done")
 
 
-    def dict_to_list(self, dict):
-        l = []
-        for key, value in dict.items():
-            l.append((int(key), float(value)))
-        return l
+    # def dict_to_list(self, dict):
+    #     l = []
+    #     for key, value in dict.items():
+    #         l.append((int(key), float(value)))
+    #     return l
 
-    def class_dict_to_list(self, dict):
-        l = []
-        for key, value in dict.items():
-            l.append((key, value))
-        return l
-
+    # def class_dict_to_list(self, dict):
+    #     l = []
+    #     for key, value in dict.items():
+    #         l.append((key, value))
+    #     return l
 
     def write_to_file(self, output_file_name):
         if output_file_name is None:
             output_file = open(self.output_fname, "w+")
         else:
             output_file = open(output_file_name, "w+")
+        
+        out_string = ""
         """First two lines are ignored"""
-        output_file.write("LAMMPS Description ({})\n\n".format(datetime.datetime.now()))
+        #output_file.write("LAMMPS Description ({})\n\n".format(datetime.datetime.now()))
+        out_string += "LAMMPS Description ({})\n\n".format(datetime.datetime.now())
         empty_line = True
 
         for k in self.header:
             if k.endswith("types") and empty_line:
-                output_file.write("\n")
+                #output_file.write("\n")
+                out_string += "\n"
                 empty_line = False
 
             if self.header[k] != 0:
-                output_file.write("{} {}\n".format(self.header[k], k))
+                #output_file.write("{} {}\n".format(self.header[k], k))
+                out_string += "{} {}\n".format(self.header[k], k)
 
         """Simulation box"""
-        output_file.write("\n")
+        #output_file.write("\n")
+        out_string += "\n"
         for k in self.box:
-            output_file.write("{} {} {}\n".format(self.box[k][0], self.box[k][0], k))
-        output_file.write("\n")
-
+            #output_file.write("{} {} {}\n".format(self.box[k][0], self.box[k][0], k))
+            out_string += "{} {} {}\n".format(self.box[k][0], self.box[k][0], k)
+        #output_file.write("\n")
+        out_string += "\n"
+        output_file.write(out_string)
 
         for entry in self.entries:
             elist = self.entries[entry]
-            # if type(elist) is dict:
-            #     elist = self.dict_to_list(elist)
-
+        
             if elist:
-                output_file.write("{}\n\n".format(entry))
-
+                # output_file.write("{}\n\n".format(entry))
                 if entry == "Masses":
-                    elist = self.dict_to_list(elist)
-
-                # Printing for bonds and angles
-                if entry == "Bonds":
-                    elist = self.class_dict_to_list(elist)
+                    masses_string = "{}\n\n".format(entry)
                     for item in elist:
-                        output_file.write(item[1].print_bond())
-
-                elif entry == "Angles":
-                    elist = self.class_dict_to_list(elist)
-                    for item in elist:
-                        output_file.write(item[1].print_angle())
+                        masses_string += " {}\t{:.12f}\n".format(item[0], item[1]).expandtabs()
+                    output_file.write(masses_string + "\n")
+                
                 elif entry == "Atoms":
-                    elist = self.class_dict_to_list(elist)
+                    atoms_string = "{}\n\n".format(entry)
+                    velocities_string = "{}\n\n".format("Velocities")
                     for item in elist:
-                        output_file.write(item[1].print_atom())
-                    # Add velocities printing
-                    output_file.write("\n")
-                    output_file.write("{}\n\n".format("Velocities"))
+                        atoms_string += item.print_atom()
+                        velocities_string += item.print_velocity()
+                    output_file.write(atoms_string + "\n")
+                    output_file.write(velocities_string + "\n")
+                elif entry == "Bonds":
+                    bonds_string = "{}\n\n".format(entry)
                     for item in elist:
-                        output_file.write(item[1].print_velocity())
-
-                else:
+                        bonds_string += item.print_bond()
+                    output_file.write(bonds_string + "\n")
+                elif entry == "Angles":
+                    angles_string = "{}\n\n".format(entry)
                     for item in elist:
-                        for i in item:
-                            output_file.write(" {}".format(i))
-                        output_file.write("\n") 
-
-                output_file.write("\n")
+                        angles_string += item.print_angle()
+                    output_file.write(angles_string + "\n")
 
         output_file.close()
 

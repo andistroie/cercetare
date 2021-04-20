@@ -36,5 +36,5 @@ class Angle:
         atom_id1 = self.atom_id1 
         atom_id2 = self.atom_id2
         atom_id3 = self.atom_id3
-        str = " %d %d %d %d %d \n" %(id, angle_type, atom_id1, atom_id2, atom_id3)
+        str = " {}\t{}\t{}\t{}\t{}\n".format(id, angle_type, atom_id1, atom_id2, atom_id3).expandtabs()
         return str
