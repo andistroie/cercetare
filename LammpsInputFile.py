@@ -244,6 +244,7 @@ class LammpsInputFile():
             # self.entries["Bonds"].append(bond)
             bond = Bond(idx, bond_type, atom1, atom2)
             self.entries["Bonds"].append(bond)
+            
         self.current_index = end
 
     def parse_angles(self):

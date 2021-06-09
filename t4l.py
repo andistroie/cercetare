@@ -3,6 +3,7 @@ from global_setting import *
 from LammpsInputFile import LammpsInputFile
 from lists import Lists
 from periodic import Periodic
+from geometry import Geometry
 
 ERROR = -1
 SUCCES = 0
@@ -51,20 +52,3 @@ if __name__ == "__main__":
 
     atom_list = l.get_atoms()
     OTHER_DEFAULTS.box = l.box
-  
-    # Periodic.pbc(atom_list)
-    # atom_list[1].x, atom_list[1].y, atom_list[1].z = Periodic.minimg(atom_list[1].x, atom_list[1].y, atom_list[1].z)
-    # print(atom_list[1].x, atom_list[1].y, atom_list[1].z)
-    # atom_list[1].x, atom_list[1].y, atom_list[1].z = Periodic.get_image_index(atom_list[1].true)
-    # print(atom_list[1].x, atom_list[1].y, atom_list[1].z)
-
-    # print(atom_list[1].x, atom_list[1].y, atom_list[1].z, atom_list[1].true)
-    # atom_list[1].true= Periodic.get_itrue(atom_list[1].x, atom_list[1].y, atom_list[1].z)
-    # print(atom_list[1].x, atom_list[1].y, atom_list[1].z, atom_list[1].true)
- 
-    # print(OTHER_DEFAULTS.xprd)
-    # Periodic.set_prd()
-    # print(OTHER_DEFAULTS.xprd)
-
-    
-
